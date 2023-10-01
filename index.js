@@ -1,85 +1,93 @@
-const http = require("http")
-const fs = require("fs/promises")
-
+const express = require("express")
+const res = require("express/lib/response.js")
+const app = express()
+const path = require("path")
 const port = 5050
-const server = http.createServer(async(req, res) => {
-    const { url } = req
 
-    const cats = [
-        {
-            imageUrl: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQw4xHiYs4vnhBs9jqjYk0_JY3-SiSavqovXA&usqp=CAU",
-            name: "Pesho",
-            breed: "ulichna1",
-            description: "Very Cute cat!1",
+const bodyParser = express.urlencoded({extended: false})
+app.use(bodyParser)
 
-        },
-        {
-            imageUrl: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQw4xHiYs4vnhBs9jqjYk0_JY3-SiSavqovXA&usqp=CAU",
-            name: "Tsunami",
-            breed: "ulichna2",
-            description: "Very Cute cat!2",
+const staticFile = express.static('public')
+app.use(staticFile)
 
-        },
-        {
-            imageUrl: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQw4xHiYs4vnhBs9jqjYk0_JY3-SiSavqovXA&usqp=CAU",
-            name: "Mariq",
-            breed: "ulichna3",
-            description: "Very Cute cat!3",
-
-        },
-        {
-            imageUrl:"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQw4xHiYs4vnhBs9jqjYk0_JY3-SiSavqovXA&usqp=CAU",
-            name:"Dancho",
-            breed:"ulichna4",
-            description:"Very Cute cat!4",
-            
-        }
-    ]
-    if (url === '/') {
-        let imageUrlPatern = /{{imageUrl}}/g
-        let namePatern = /{{name}}/g
-        let breedPatern = /{{breed}}/g
-        let descriotionPatern = /{{description}}/g
-    const catTemplate = await fs.readFile('./views/home/catTemplte.html',"utf-8")
-    const homeHtml =await fs.readFile('./views/home/index.html',"utf-8")
-
-
-        const catHtml = cats.map(cat => catTemplate
-        .replace(imageUrlPatern, cat.imageUrl)
-        .replace(namePatern, cat.name)
-        .replace(breedPatern, cat.breed)
-        .replace(descriotionPatern, cat.description)).join("")
-
- 
-       const homeHtmlTemplate =  homeHtml.replace("{{cats}}", catHtml)
-        res.writeHead(200, {
-            "Content-Type": "text/html"
-        })
-        res.write(homeHtmlTemplate)
-    }
-    else if (url === '/content/styles/site.css') {
-        const siteCss =await fs.readFile('./content/styles/site.css',"utf-8")
-        console.log(siteCss)
-        res.writeHead(200, {
-            "Content-Type": "text/css"
-        })
-        res.write(siteCss)
-
-    }
-    else if (url === '/cats/add-breed') {
-       const addBread =await fs.readFile('./views/home/addBreed.html',"utf-8")
-       res.writeHead(200, {
-        "Content-Type": "text/html"
-    })
-    res.write(addBread)
-    }
-    else if (url === '/cats/add-cat') {
-        const addCat =await fs.readFile('./views/home/addCat.html',"utf-8")
-        res.writeHead(200, {
-            "Content-Type": "text/html"
-        })
-        res.write(addCat)
-    }
-    res.end();
+app.use((req,res, next) =>{
+    console.log(`HTTP Request: ${req.method}, Request path: ${req.path}`)
+    next()
 })
-server.listen(port, () => console.log(`server is Running on port${port}`))
+app.use('/kittens', (req,res, next) =>{
+    console.log("kittens midleware is involked")
+    next()
+})
+app.get('/specific',(req,res, next) =>{
+console.log("thos is the specific routeMIddle ware")
+next()
+} ,(req, res) =>{
+    res.send("This is specific route")
+})
+
+
+
+app.get('/', (req, res) =>{
+    res.send("Home page")
+})
+//app.post('/public/css/style.css', (req, res) =>{
+//    res.sendFile(path.resolve(__dirname,"public/css","style.css")) 
+//})
+app.get('/kittens', (req, res) =>{
+    res.send(`<!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" href="./css/style.css">
+
+        <title>Document</title>
+    </head>
+    <body>
+        <form method="post">
+            <label for="fname">First name:</label>
+            <br>
+            <input type="text" id="fname" name="fname">
+            <br>
+            <label for="age">Age:</label>
+            <br>
+            <input type="text" id="age" name="age">
+            <br>
+            <br>
+            <input type="submit" value="Create Kitten">
+          </form> 
+    </body>
+    </html>`)
+})
+app.post('/kittens', (req, res) =>{
+    console.log(req.body)
+    res.send("Kitten is created")
+    
+})
+
+app.get('/kittens/:kittenId', (req, res) =>{
+     const idKitten =Number(req.params.kittenId)
+     if(!idKitten){
+        res.status(404).send("incorect id : "+ req.params.kittenId)
+        return
+     }
+        res.send({id: idKitten, name:"Kircho"+idKitten}) 
+})
+
+app.get("/download-png", (req,res)=>{
+   // res.download("./cactus.png")
+   // res.attachment("./cactus.png")
+   // res.end();
+   // res.sendFile(path.resolve(__dirname,"./cactus.png"))
+})
+app.get('/route-that-will-be-redirected', (req, res) =>{
+    res.redirect("/kittens")
+    
+})
+app.get('*', (req, res) =>{
+    res.status(404)
+    res.send("Incorect path")
+    
+})
+
+app.listen(port, () => console.log(`post is running on ${port}`))
