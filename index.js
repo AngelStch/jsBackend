@@ -2,12 +2,18 @@ const express = require("express")
 const res = require("express/lib/response.js")
 const app = express()
 const path = require("path")
+const hanldebars = require("express-handlebars")
+const { getKittens,addKitten } = require("./kittens.js")
 const port = 5050
+
+app.engine('hbs', hanldebars.engine({extname: "hbs"}))
+app.set("view engine", "hbs")
+
 
 const bodyParser = express.urlencoded({extended: false})
 app.use(bodyParser)
 
-const staticFile = express.static('public')
+const staticFile = express.static('public');
 app.use(staticFile)
 
 app.use((req,res, next) =>{
@@ -28,13 +34,19 @@ next()
 
 
 app.get('/', (req, res) =>{
-    res.send("Home page")
+   // res.send("Home page")
+   res.render("home")
+
+})
+
+app.get("/about",(req,res) =>{
+    res.render("aboutUs")
 })
 //app.post('/public/css/style.css', (req, res) =>{
 //    res.sendFile(path.resolve(__dirname,"public/css","style.css")) 
 //})
 app.get('/kittens', (req, res) =>{
-    res.send(`<!DOCTYPE html>
+    /*res.send(`<!DOCTYPE html>
     <html lang="en">
     <head>
         <meta charset="UTF-8">
@@ -57,10 +69,16 @@ app.get('/kittens', (req, res) =>{
             <input type="submit" value="Create Kitten">
           </form> 
     </body>
-    </html>`)
+    </br></html>`)
+    */
+
+    const kittens = getKittens()
+    res.render("kittens", {kittens})
 })
 app.post('/kittens', (req, res) =>{
-    console.log(req.body)
+    const name  =req.body.name
+    const age =Number(req.body.age)
+    addKitten(name,age)
     res.send("Kitten is created")
     
 })
