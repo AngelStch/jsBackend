@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crud Example</title>
+    <link rel="stylesheet" href="styles.css">
+    <script type="madule" src="app.js"></script>
+</head>
+
+<body>
+    <main>
+        <button id = "loadBtn">Load Landmarks</button>
+        <table id="landmark-table">
+            <thead>
+                <tr>
+                    <th>name</th>
+                    <th>Area</th>
+                    <th>Year Dated Start</th>
+                    <th>Year Dated End</th>
+                    <th>Controls</th>
+                </tr>
+            </thead>
+        </table>
+        <h2>Create Landmark</h2>
+        <form id="create-form">
+            <div>
+                <label for="create-name">Name</label>
+                <input type="create-name" type="text">
+            </div>
+            <div>
+                <label for="create-area">Area</label>
+                <input type="create-area" type="text">
+            </div>
+            <div> <label for="create-year-dated-start">Year dated start</label>
+                <input type="create-year-dated-start" type="number">
+            </div>
+            <div> <label for="create-year-dated-end">Year dated end</label>
+                <input type="create-year-dated-end" type="number">
+            </div>
+            <button id="createBtn">Create</button>
+        </form>
+        
+        <h2>Edit Landmark</h2>
+        <form id="edit-form">
+            <div>
+                <label for="edit-name">Name</label>
+                <input type="edit-name" type="text">
+            </div>
+            <div>
+                <label for="edit-area">Area</label>
+                <input type="edit-area" type="text">
+            </div>
+            <div> <label for="edit-year-dated-start">Year dated start</label>
+                <input type="edit-year-dated-start" type="number">
+            </div>
+            <div> <label for="edit-year-dated-end">Year dated end</label>
+                <input type="edit-year-dated-end" type="number">
+            </div>
+            <button id="editBtn">Edit</button>
+        </form>
+    </main>
+</body>
+
+</html>
